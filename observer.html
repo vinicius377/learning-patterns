@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Observer</title>
+    <style>
+      .element {
+        padding: 5px 10px;
+        flex-wrap: wrap;
+        background: #ccc;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .element:hover {
+        background: rgb(224, 38, 38);
+      }
+    </style>
+  </head>
+  <body>
+    <textarea></textarea>
+    <button>Create new element</button>
+    <h1>Click at element for remove it of observers</h1>
+    <main></main>
+    <script>
+      class Observable {
+        constructor() {
+          this.observers = [];
+        }
+        subscribe(fn) {
+          this.observers.push(fn);
+        }
+        unsubscribe(fn) {
+          this.observers = this.observers.filter((observer) => observer != fn);
+        }
+        notify(data) {
+          this.observers.forEach((observer) => observer(data));
+        }
+      }
+      const headerObserve = new Observable();
+
+      const button = document.querySelector("button");
+      const input = document.querySelector("textarea");
+      let main = document.querySelector("main");
+
+      input.addEventListener("keyup", (e) => {
+        headerObserve.notify(e.target.value);
+      });
+
+      button.addEventListener("click", () => {
+        const element = document.createElement("h2");
+        element.className = "element";
+        element.innerHTML = input.value;
+        const updateContent = (data) => (element.innerHTML = data);
+        headerObserve.subscribe(updateContent);
+        element.onclick = (e) => {
+          headerObserve.unsubscribe(updateContent);
+        };
+        main.appendChild(element);
+      });
+    </script>
+  </body>
+</html>
